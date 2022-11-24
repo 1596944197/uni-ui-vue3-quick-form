@@ -18,7 +18,7 @@ export type RuleType = {
   [key: string]: Rules
 };
 
-export type InputType = 'text' | 'textarea' | 'datepicker' | 'cascade' | 'upload' | 'tags' | 'number' | 'dropDown';
+export type InputType = 'text' | 'textarea' | 'datepicker' | 'cascade' | 'upload' | 'tags' | 'number' | 'dropDown' | 'checkbox' | 'radio';
 
 
 export type LabelPositionType = 'top' | 'left'
@@ -30,12 +30,13 @@ export type FormDataType = {
 export type Fields = {
   type?: InputType;
   placeholder?: string;
-  columns?: { text: string; value: any, [prop: string]: any }[];
+  columns?: AnyObj[];
   disabled?: boolean;
   data?: any;
   key: string;
   label: string;
   required?: boolean;
+  clearable?: boolean
   [k: string]: any;
 };
 

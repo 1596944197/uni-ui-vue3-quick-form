@@ -16,8 +16,8 @@ export function renderSheetData<T extends FormDataType>(data: T): ReturnTypeBySh
   return result
 
 
-  function getData(type?: InputType, data?: any): string | AnyArray {
-    if (type === 'cascade' || type === 'dropDown' || type === 'upload') {
+  function getData(type?: InputType, data?: any): string | AnyArray | number {
+    if (type === 'cascade' || type === 'upload' || type === 'checkbox') {
       return data ? data : []
     } else {
       return data ? data : ''
