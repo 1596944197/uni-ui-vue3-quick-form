@@ -1,0 +1,1 @@
+<view class="content"><quick-form-vue wx:if="{{b}}" u-i="0b4b2d75-0" bind:__l="__l" bindupdateModelValue="{{a}}" u-p="{{b}}"/></view>

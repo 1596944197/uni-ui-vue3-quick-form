@@ -23,16 +23,14 @@ export type InputType = 'text' | 'textarea' | 'datepicker' | 'cascade' | 'upload
 
 export type LabelPositionType = 'top' | 'left'
 
-export type FormDataType = {
-  [key: string]: Fields
-}
+export type FormDataType = Fields[]
 
 export type Fields = {
   type?: InputType;
   placeholder?: string;
   columns?: AnyObj[];
   disabled?: boolean;
-  data?: any;
+  data?: unknown;
   key: string;
   label: string;
   required?: boolean;
@@ -40,6 +38,6 @@ export type Fields = {
   [k: string]: any;
 };
 
-export type ReturnTypeBySheet<T> = {
-  [P in keyof T]: Fields
-}
+export type ReturnTypeBySheet<T extends any[], Arr extends Fields[] = []> =
+  T extends [infer L extends Fields, ...infer Rest extends Fields[]] ?
+  ReturnTypeBySheet<Rest, [...a1: Arr, a2: L]> : Arr

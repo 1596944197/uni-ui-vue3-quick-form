@@ -8,7 +8,7 @@
           :label-width="$props.width"
           :label-position="$props.position"
         >
-          <view v-for="item in renderSheetData(modelValue)" :key="item.key">
+          <view v-for="item of renderSheetData(modelValue)" :key="item.key">
             <uni-forms-item
               :name="item.key"
               :label="item.label"
@@ -24,6 +24,7 @@
                 :clear-icon="item.clearable"
                 :disabled="item.disabled"
                 hide-second
+                @change="onchange3"
               />
 
               <uni-datetime-picker
@@ -58,12 +59,14 @@
                 multiple
                 v-model="item.data"
                 :localdata="item.columns"
+                @change="onchange2"
               ></uni-data-checkbox>
 
               <uni-data-checkbox
                 v-else-if="item.type === 'radio'"
                 v-model="item.data"
                 :localdata="item.columns"
+                @change="onchange2"
               ></uni-data-checkbox>
 
               <view class="tags" v-else-if="item.type === 'tags'">
@@ -101,7 +104,7 @@
 import { defineProps, withDefaults } from "vue";
 import type { FormDataType, LabelPositionType } from "./Type";
 import { renderSheetData } from "./utils";
-withDefaults(
+const props = withDefaults(
   defineProps<{
     position?: LabelPositionType;
     width?: string | number;
@@ -114,16 +117,17 @@ withDefaults(
   {
     position: "top",
     width: () => 150,
-    modelValue: () => ({}),
+    modelValue: () => [],
     buttonStyle: (props) => ({
       isShow: true,
       type: "primary",
     }),
   }
 );
-defineEmits(["upload:modelValue"]);
 
-const onchange = (...args: any[]) => console.log(args);
+const onchange = (...args: any[]) => console.log("下拉框", args);
+const onchange2 = (...args: any[]) => console.log("多选框", args);
+const onchange3 = (...args: any[]) => console.log("级联", args);
 </script>
 
 <style lang="scss" scoped>

@@ -1,26 +1,18 @@
-import { FormDataType, InputType, ReturnTypeBySheet } from "./Type"
+import { FormDataType, InputType } from "./Type"
 
-export function renderSheetData<T extends FormDataType>(data: T): ReturnTypeBySheet<T> {
-  const result = data
+export function renderSheetData<T extends FormDataType>(data: T) {
+  data.forEach(item => {
+    item.data = getData(item.type, item.data)
+    item.type = item.type || 'text'
+  })
 
-  for (const key in data) {
-    const d = data[key]
-    result[key] = {
-      ...d,
-      type: d.type || 'text',
-      placeholder: d.placeholder || `请填写表单值`,
-      columns: d.columns || [],
-      data: getData(d.type, d.data),
-    }
-  }
-  return result
+  return data
+}
 
-
-  function getData(type?: InputType, data?: any): string | AnyArray | number {
-    if (type === 'cascade' || type === 'upload' || type === 'checkbox') {
-      return data ? data : []
-    } else {
-      return data ? data : ''
-    }
+function getData(type?: InputType, data?: any): string | AnyArray | number {
+  if (type === 'cascade' || type === 'upload' || type === 'checkbox') {
+    return data ? data : []
+  } else {
+    return data ? data : ''
   }
 }

@@ -5,17 +5,18 @@
 </template>
 
 <script setup lang="ts">
+import { reactive } from "vue";
 import QuickFormVue from "../../components/QuickForm/QuickForm.vue";
 import { FormDataType } from "../../components/QuickForm/Type";
 
-const formData: FormDataType = {
-  a: {
+const formData: FormDataType = reactive([
+  {
     label: "标题1",
     key: "ces",
     data: "测试数据",
     required: true,
   },
-  c: {
+  {
     label: "级联",
     key: "cascade",
     columns: [
@@ -56,7 +57,7 @@ const formData: FormDataType = {
     type: "cascade",
     required: true,
   },
-  d: {
+  {
     label: "下拉框",
     key: "drop-down",
     data: "200",
@@ -68,7 +69,7 @@ const formData: FormDataType = {
     clearable: true,
     type: "dropDown",
   },
-  e: {
+  {
     label: "多选框",
     key: "duo",
     columns: [
@@ -78,7 +79,7 @@ const formData: FormDataType = {
     ],
     type: "checkbox",
   },
-  f: {
+  {
     label: "单选框",
     key: "single",
     columns: [
@@ -88,23 +89,23 @@ const formData: FormDataType = {
     ],
     type: "radio",
   },
-  g: {
+  {
     label: "文本域",
     key: "area",
     type: "textarea",
   },
-  b: {
+  {
     label: "文件选择框",
     key: "file",
     data: "",
     type: "upload",
     required: true,
   },
-  h: {
+  {
     label: "标签",
     key: "tag",
     type: "tags",
     data: ["审核人1", "审核人2"],
   },
-};
+]);
 </script>
