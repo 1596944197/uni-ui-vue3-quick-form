@@ -1,18 +1,26 @@
 <template>
   <view class="container">
     <uni-section title="测试数据" type="line">
-      <scroll-view scroll-y style="height: 1800px; margin-left: 5%; width: 90%">
+      <scroll-view scroll-y style="height: 1200px; margin-left: 5%; width: 90%">
         <uni-forms
           ref="form"
-          :model="renderSheetData(modelValue)"
+          :model="formData"
           :label-width="$props.width"
           :label-position="$props.position"
         >
-          <view v-for="item of renderSheetData(modelValue)" :key="item.key">
+          <view v-for="item of formData" :key="item.key">
             <uni-forms-item
               :name="item.key"
               :label="item.label"
               :required="item.required"
+              :rules="
+                item.rules || [
+                  {
+                    required: item.required,
+                    errorMessage: `${item.label}为必填`,
+                  },
+                ]
+              "
               v-if="item.key !== 'id'"
             >
               <uni-data-picker
@@ -91,43 +99,40 @@
             </uni-forms-item>
           </view>
         </uni-forms>
-
-        <button v-if="buttonStyle" :type="buttonStyle.type" plain="true">
-          提交
-        </button>
       </scroll-view>
     </uni-section>
   </view>
 </template>
 
 <script setup lang="ts">
-import { defineProps, withDefaults } from "vue";
-import type { FormDataType, LabelPositionType } from "./Type";
+import { ref, withDefaults } from "vue";
+import type { FormDataType, LabelPositionType, UniFormApi } from "./Type";
 import { renderSheetData } from "./utils";
+
 const props = withDefaults(
   defineProps<{
     position?: LabelPositionType;
     width?: string | number;
     modelValue: FormDataType;
-    buttonStyle?: Partial<{
-      isShow: boolean;
-      type: "primary" | "warn" | "default";
-    }>;
   }>(),
   {
     position: "top",
     width: () => 150,
     modelValue: () => [],
-    buttonStyle: (props) => ({
-      isShow: true,
-      type: "primary",
-    }),
   }
 );
+
+const form = ref<UniFormApi>().value;
+
+const formData = renderSheetData(props.modelValue);
 
 const onchange = (...args: any[]) => console.log("下拉框", args);
 const onchange2 = (...args: any[]) => console.log("多选框", args);
 const onchange3 = (...args: any[]) => console.log("级联", args);
+
+defineExpose({
+  validate: () => form?.validate(),
+});
 </script>
 
 <style lang="scss" scoped>
@@ -136,6 +141,7 @@ $uni-border-left: 8rpx solid #2979ff;
 $uni-padding-left: 20rpx;
 .container {
   background-color: whitesmoke;
+  height: 900px;
 }
 
 // # 穿透样式到源码

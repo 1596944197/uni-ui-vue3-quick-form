@@ -5,14 +5,13 @@ export function renderSheetData<T extends FormDataType>(data: T) {
     item.data = getData(item.type, item.data)
     item.type = item.type || 'text'
   })
-
   return data
 }
 
-function getData(type?: InputType, data?: any): string | AnyArray | number {
-  if (type === 'cascade' || type === 'upload' || type === 'checkbox') {
-    return data ? data : []
-  } else {
-    return data ? data : ''
+function getData(type?: InputType, data?: any) {
+  if (type === 'cascade' || type === 'upload' || type === 'checkbox' || type === 'tags') {
+    return data instanceof Array ? data : []
   }
+  if (data instanceof String) return data || ''
+  if (data instanceof Number) return data || 0
 }

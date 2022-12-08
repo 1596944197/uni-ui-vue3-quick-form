@@ -1,19 +1,20 @@
 <template>
   <view class="content">
-    <QuickFormVue v-model="formData" />
+    <QuickFormVue ref="quick" v-model="formData" />
+    <button @click="check" type="primary" plain="true">提交</button>
   </view>
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import QuickFormVue from "../../components/QuickForm/QuickForm.vue";
 import { FormDataType } from "../../components/QuickForm/Type";
 
-const formData: FormDataType = reactive([
+const formData = reactive<FormDataType>([
   {
     label: "标题1",
     key: "ces",
-    data: "测试数据",
+    value: "测试数据",
     required: true,
   },
   {
@@ -60,7 +61,6 @@ const formData: FormDataType = reactive([
   {
     label: "下拉框",
     key: "drop-down",
-    data: "200",
     columns: [
       { value: "100", text: "篮球" },
       { value: "200", text: "足球" },
@@ -97,7 +97,7 @@ const formData: FormDataType = reactive([
   {
     label: "文件选择框",
     key: "file",
-    data: "",
+    value: "",
     type: "upload",
     required: true,
   },
@@ -105,7 +105,14 @@ const formData: FormDataType = reactive([
     label: "标签",
     key: "tag",
     type: "tags",
-    data: ["审核人1", "审核人2"],
+    value: ["审核人1", "审核人2"],
   },
 ]);
+
+const quick = ref<InstanceType<typeof QuickFormVue>>();
+
+const check = () => {
+  console.log(123);
+  console.log(quick.value?.validate?.());
+};
 </script>
