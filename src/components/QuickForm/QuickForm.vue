@@ -1,12 +1,13 @@
 <template>
   <view class="container">
     <uni-section title="测试数据" type="line">
-      <scroll-view scroll-y style="height: 1200px; margin-left: 5%; width: 90%">
+      <scroll-view scroll-y style="height: 100%; margin-left: 5%; width: 90%">
         <uni-forms
           ref="form"
           :model="formData"
-          :label-width="$props.width"
-          :label-position="$props.position"
+          :label-width="props.width"
+          :label-position="props.position"
+          :validateTrigger="props.validateTrigger"
         >
           <view v-for="item of formData" :key="item.key">
             <uni-forms-item
@@ -17,7 +18,7 @@
                 item.rules || [
                   {
                     required: item.required,
-                    errorMessage: `${item.label}为必填`,
+                    errorMessage: `${item.label}为必填项`,
                   },
                 ]
               "
@@ -25,37 +26,39 @@
             >
               <uni-data-picker
                 v-if="item.type === 'cascade'"
-                v-model="item.data"
+                v-model="item.value"
                 :localdata="item.columns"
                 :placeholder="item.placeholder"
                 return-type="date"
                 :clear-icon="item.clearable"
                 :disabled="item.disabled"
                 hide-second
-                @change="onchange3"
+                @change="onChangeByCascade(item, $event)"
               />
 
               <uni-datetime-picker
                 v-else-if="item.type === 'datepicker'"
                 :placeholder="item.placeholder || '请输入投放时间'"
-                v-model="item.data"
+                v-model="item.value"
                 :disabled="item.disabled"
+                @change="onChangeByDatePicker(item, $event)"
               />
 
               <uni-file-picker
                 :ref="item.key"
                 v-else-if="item.type === 'upload'"
-                v-model="item.data"
+                v-model="item.value"
                 :disabled="item.disabled"
                 fileMediatype="image"
                 mode="grid"
                 :auto-upload="false"
                 :image-styles="{ height: '160rpx' }"
+                @select="onFileSelect(item, $event)"
               />
 
               <uni-data-select
                 v-else-if="item.type === 'dropDown'"
-                v-model="item.data"
+                v-model="item.value"
                 :localdata="item.columns"
                 :clear="item.clearable"
                 :placeholder="item.placeholder"
@@ -65,22 +68,22 @@
               <uni-data-checkbox
                 v-else-if="item.type === 'checkbox'"
                 multiple
-                v-model="item.data"
+                v-model="item.value"
                 :localdata="item.columns"
-                @change="onchange2"
+                @change="onChangeByCheckBox(item, $event)"
               ></uni-data-checkbox>
 
               <uni-data-checkbox
                 v-else-if="item.type === 'radio'"
-                v-model="item.data"
+                v-model="item.value"
                 :localdata="item.columns"
-                @change="onchange2"
+                @change="onChangeByCheckBox(item, $event)"
               ></uni-data-checkbox>
 
               <view class="tags" v-else-if="item.type === 'tags'">
                 <uni-tag
                   style="margin-right: 20rpx; margin-top: 25rpx"
-                  v-for="text of item.data"
+                  v-for="text of item.value"
                   :key="text"
                   :text="text"
                   type="primary"
@@ -92,7 +95,7 @@
                 v-else
                 :type="item.type || 'text'"
                 :disabled="item.disabled"
-                v-model="item.data"
+                v-model="item.value"
                 :clearable="item.clearable"
                 :placeholder="item.placeholder || '请输入'"
               />
@@ -105,8 +108,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, withDefaults } from "vue";
-import type { FormDataType, LabelPositionType, UniFormApi } from "./Type";
+import { onMounted, ref, withDefaults } from "vue";
+import type {
+  CascadeType,
+  CheckboxType,
+  Fields,
+  FormDataType,
+  LabelPositionType,
+  Rules,
+  SelectFileType,
+  UniFormApi,
+} from "./Type";
 import { renderSheetData } from "./utils";
 
 const props = withDefaults(
@@ -114,25 +126,91 @@ const props = withDefaults(
     position?: LabelPositionType;
     width?: string | number;
     modelValue: FormDataType;
+    validateTrigger?: Rules[0]["validateTrigger"];
   }>(),
   {
     position: "top",
     width: () => 150,
     modelValue: () => [],
+    validateTrigger: () => "submit",
   }
 );
 
-const form = ref<UniFormApi>().value;
+defineExpose({
+  validate: () => form.value?.validate?.(),
+});
+
+const emit = defineEmits<{
+  (
+    e: "changeByCascade",
+    target: Fields,
+    event: CascadeType["detail"]["value"]
+  ): void;
+  (e: "changeByCheckbox", target: Fields, event: CheckboxType["detail"]): void;
+  (e: "changeByDatePicker", target: Fields, event: string | string[]): void;
+}>();
+
+const form = ref<UniFormApi>();
 
 const formData = renderSheetData(props.modelValue);
 
-const onchange = (...args: any[]) => console.log("下拉框", args);
-const onchange2 = (...args: any[]) => console.log("多选框", args);
-const onchange3 = (...args: any[]) => console.log("级联", args);
-
-defineExpose({
-  validate: () => form?.validate(),
+onMounted(() => {
+  initData();
 });
+
+// # 底下都是函数
+const setValue = (key: string, value: any) => {
+  const t = form.value;
+  if (!t) return;
+  t.setValue(key, value);
+};
+
+const initData = () => {
+  const target = form.value;
+  if (!target) return;
+  const result: AnyObj = {};
+  formData.forEach(({ key, value }) => (result[key] = value));
+  target.formData = result;
+};
+const onchange = (...args: any[]) => {};
+const onChangeByCheckBox: (target: Fields, event: CheckboxType) => void = (
+  target,
+  event
+) => {
+  setValue(target.key, event.detail.value);
+  emit("changeByCheckbox", target, event.detail);
+};
+
+const onChangeByCascade: (target: Fields, event: CascadeType) => void = (
+  target,
+  event
+) => {
+  const v = event.detail.value;
+  setValue(target.key, v.length ? v[v.length - 1].value : []);
+  emit("changeByCascade", target, v);
+};
+
+const onFileSelect: (target: Fields, event: SelectFileType) => void = (
+  target,
+  { tempFiles: [file] }
+) => {
+  if (target.value instanceof Array) {
+    target.value.push({
+      extname: file.extname,
+      name: file.name,
+      url: file.url,
+    });
+    setValue(target.key, target.value);
+  }
+};
+
+const onChangeByDatePicker: (
+  target: Fields,
+  event: string | string[]
+) => void = (target, event) => {
+  setValue(target.key, event);
+  emit("changeByDatePicker", target, event);
+};
 </script>
 
 <style lang="scss" scoped>

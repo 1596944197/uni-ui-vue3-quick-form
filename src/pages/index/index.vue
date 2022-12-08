@@ -18,6 +18,12 @@ const formData = reactive<FormDataType>([
     required: true,
   },
   {
+    label: "时间选择",
+    key: "timer",
+    type: "datepicker",
+    required: true,
+  },
+  {
     label: "级联",
     key: "cascade",
     columns: [
@@ -97,7 +103,6 @@ const formData = reactive<FormDataType>([
   {
     label: "文件选择框",
     key: "file",
-    value: "",
     type: "upload",
     required: true,
   },
@@ -111,8 +116,17 @@ const formData = reactive<FormDataType>([
 
 const quick = ref<InstanceType<typeof QuickFormVue>>();
 
-const check = () => {
-  console.log(123);
-  console.log(quick.value?.validate?.());
+const check = async () => {
+  try {
+    console.log(await quick.value?.validate?.());
+  } catch (error) {
+    console.warn(error);
+  }
 };
 </script>
+
+<style scoped>
+.content {
+  height: 1800px;
+}
+</style>

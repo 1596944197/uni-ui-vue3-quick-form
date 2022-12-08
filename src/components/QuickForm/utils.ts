@@ -2,16 +2,14 @@ import { FormDataType, InputType } from "./Type"
 
 export function renderSheetData<T extends FormDataType>(data: T) {
   data.forEach(item => {
-    item.data = getData(item.type, item.data)
+    item.value = getData(item.type, item.value)
     item.type = item.type || 'text'
   })
   return data
 }
 
-function getData(type?: InputType, data?: any) {
-  if (type === 'cascade' || type === 'upload' || type === 'checkbox' || type === 'tags') {
-    return data instanceof Array ? data : []
-  }
-  if (data instanceof String) return data || ''
-  if (data instanceof Number) return data || 0
+function getData(type?: InputType, value?: any) {
+  if (type === 'cascade' || type === 'upload' || type === 'checkbox' || type === 'tags') return value instanceof Array ? value : []
+  if (value instanceof String) return value || ''
+  if (value instanceof Number) return value || 0
 }

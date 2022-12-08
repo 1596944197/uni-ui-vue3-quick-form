@@ -1,5 +1,5 @@
 
-type Rules = Partial<{
+export type Rules = Partial<{
   required: boolean
   errorMessage: string
   range: AnyArray
@@ -10,11 +10,8 @@ type Rules = Partial<{
   maximum: number
   minimum: number
   validateFunction: (rules: Rules, value: any, data: any, callback: Function) => any
+  validateTrigger: 'submit' | 'bind'
 }>[]
-
-export type RuleType = {
-  [key: string]: Rules
-};
 
 export type InputType = 'text' | 'textarea' | 'datepicker' | 'cascade' | 'upload' | 'tags' | 'number' | 'dropDown' | 'checkbox' | 'radio';
 
@@ -45,7 +42,27 @@ export type ReturnTypeBySheet<T extends any[], Arr extends Fields[] = []> =
 export interface UniFormApi {
   formData: AnyObj;
   rules: AnyObj;
-  setValue: (val: any) => void;
+  setValue: (key: string, val: any, force?: boolean) => void;
   validate: () => Promise<any>;
   validateField: (name: string) => any;
 }
+
+export type SelectFileType = {
+  tempFiles: [{
+    extname: string
+    fileType: string
+    image: {
+      height: number
+      location: string
+      width: number
+    }
+    name: string
+    size: number
+    url: string
+    uuid: string
+  }]
+}
+
+export type CascadeType = { detail: { value: { text: string; value: any }[] } }
+
+export type CheckboxType = { detail: { data: AnyObj[], value: any[] } }
