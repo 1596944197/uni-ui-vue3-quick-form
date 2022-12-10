@@ -9,7 +9,8 @@ export function renderSheetData<T extends FormDataType>(data: T) {
 }
 
 function getData(type?: InputType, value?: any) {
-  if (type === 'cascade' || type === 'upload' || type === 'checkbox' || type === 'tags') return value instanceof Array ? value : []
+  if (type === 'upload' || type === 'checkbox' || type === 'tags') return value instanceof Array ? value : []
   if (value instanceof String) return value || ''
   if (value instanceof Number) return value || 0
+  return value
 }
