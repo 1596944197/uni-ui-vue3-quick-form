@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "uni-app",
+  "usingComponents": {
+    "quick-form-vue": "../../components/QuickForm/QuickForm"
+  }
+}
