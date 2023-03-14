@@ -1,6 +1,7 @@
 {
   "name": "uni-preset-vue",
-  "version": "0.0.0",
+  "version": "0.0.0",   
+  "author": "MEI 1596944197@qq.com",
   "scripts": {
     "dev:app": "uni -p app",
     "dev:custom": "uni -p",
